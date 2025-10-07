@@ -1,0 +1,48 @@
+{
+  "name": "n8n-nodes-namsor",
+  "version": "0.1.0",
+  "description": "Official Namsor integration for n8n (community nodes)",
+  "author": "",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/nodes/Namsor/namsor.svg"
+  ],
+  "keywords": [
+    "n8n",
+    "n8n-community-node",
+    "n8n-nodes",
+    "namsor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && copyfiles -u 1 \"src/nodes/**/*.svg\" dist/",
+    "watch": "tsc -w -p .",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.44",
+    "copyfiles": "^2.4.1",
+    "n8n-core": "^1.0.0",
+    "n8n-workflow": "^1.0.0",
+    "rimraf": "^5.0.10",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "n8n-core": "*",
+    "n8n-workflow": "*"
+  },
+  "n8n": {
+    "credentials": [
+      "dist/credentials/NamsorApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Namsor/Namsor.node.js"
+    ]
+  }
+}
