@@ -10,7 +10,7 @@ export class Namsor implements INodeType {
     icon: 'file:namsor.svg',
     group: ['transform'],
     version: 1,
-    subtitle: '={{$parameter["operation"]}}',
+    subtitle: '={{$parameter["resource"]}}: {{$parameter["operation"]}}',
     description: 'Work with Namsor API',
     defaults: {
       name: 'Namsor',
@@ -25,23 +25,100 @@ export class Namsor implements INodeType {
     ],
     properties: [
       {
+        displayName: 'Resource',
+        name: 'resource',
+        type: 'options',
+        noDataExpression: true,
+        description: 'Select the feature category you want to use.',
+        options: [
+          { name: 'Gender', value: 'gender', description: 'Predict likely gender from a name' },
+          { name: 'Origin', value: 'origin', description: 'Predict country of origin from a name' },
+          { name: 'Ethnicity (Diaspora)', value: 'ethnicity', description: 'Predict ethnicity/diaspora from a name' },
+          { name: 'US Race/Ethnicity', value: 'usRaceEthnicity', description: 'Predict US census race/ethnicity classes' },
+          { name: 'Indian Caste', value: 'indianCaste', description: 'Predict Indian caste group from a name' },
+          { name: 'Name Parsing', value: 'nameParsing', description: 'Split a full name into first and last name' },
+        ],
+        default: 'gender',
+      },
+
+      // Operation per resource
+      {
         displayName: 'Operation',
         name: 'operation',
         type: 'options',
         noDataExpression: true,
+        displayOptions: { show: { resource: ['gender'] } },
+        description: 'Choose how you provide the name(s) for gender prediction.',
         options: [
-          { name: 'Ethnicity (Diaspora) by Name', value: 'ethnicityName', description: 'Predict ethnicity from first and/or last names', action: 'Get ethnicity from names' },
-          { name: 'Gender by Name', value: 'genderName', description: 'Predict gender from first name and optional last name', action: 'Get gender from names' },
-          { name: 'Gender by Full Name', value: 'genderFullName', description: 'Predict gender from full name', action: 'Get gender from full name' },
-          { name: 'Split Full Names', value: 'splitFullNames', description: 'Split a full name into first and last name', action: 'Split full names' },
-          { name: 'Origin by Name', value: 'originName', description: 'Predict country of origin from names', action: 'Get origin from names' },
-          { name: 'Origin by Full Name', value: 'originFullName', description: 'Predict country of origin from full name', action: 'Get origin from full name' },
-          { name: 'US Race/Ethnicity by Name', value: 'usRaceEthnicityName', description: 'Predict US race/ethnicity (Census taxonomy) from names', action: 'Get US race/ethnicity from names' },
-          { name: 'US Race/Ethnicity by Full Name', value: 'usRaceEthnicityFullName', description: 'Predict US race/ethnicity (Census taxonomy) from full name', action: 'Get US race/ethnicity from full name' },
-          { name: 'Indian Caste by Name', value: 'indianCasteName', description: 'Predict Indian caste group from names', action: 'Get Indian caste from names' },
-          { name: 'Indian Caste by Full Name', value: 'indianCasteFullName', description: 'Predict Indian caste group from full name', action: 'Get Indian caste from full name' },
+          { name: 'Name', value: 'name', action: 'Predict gender from name', description: 'Use first name (required) and optional last name' },
+          { name: 'Full Name', value: 'fullName', action: 'Predict gender from full name', description: 'Use a single full name field' },
         ],
-        default: 'ethnicityName',
+        default: 'name',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['origin'] } },
+        description: 'Choose how you provide the name(s) for origin prediction.',
+        options: [
+          { name: 'Name', value: 'name', action: 'Predict origin from name', description: 'Use first and/or last name' },
+          { name: 'Full Name', value: 'fullName', action: 'Predict origin from full name', description: 'Use a single full name field' },
+        ],
+        default: 'name',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['ethnicity'] } },
+        description: 'Predict ethnicity/diaspora from first/last names.',
+        options: [
+          { name: 'Name', value: 'name', action: 'Predict ethnicity (diaspora) from name', description: 'Use last name (required) and optional first name' },
+          { name: 'Full Name', value: 'fullName', action: 'Predict ethnicity (diaspora) from full name', description: 'Use a single full name field' },
+
+        ],
+        default: 'name',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['usRaceEthnicity'] } },
+        description: 'Predict US race/ethnicity classes from names.',
+        options: [
+          { name: 'Name', value: 'name', action: 'Predict US race/ethnicity from name', description: 'Use first and/or last name' },
+          { name: 'Full Name', value: 'fullName', action: 'Predict US race/ethnicity from full name', description: 'Use a single full name field' },
+        ],
+        default: 'name',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['indianCaste'] } },
+        description: 'Predict Indian caste group from names.',
+        options: [
+          { name: 'Name', value: 'name', action: 'Predict Indian caste from name', description: 'Use first & last name plus Indian subdivision ISO code' },
+          { name: 'Full Name', value: 'fullName', action: 'Predict Indian caste from full name', description: 'Use full name plus Indian subdivision ISO code' },
+        ],
+        default: 'name',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['nameParsing'] } },
+        description: 'Split a full name into first and last name components.',
+        options: [
+          { name: 'Split Full Names', value: 'splitFullNames', action: 'Split full names', description: 'Provide a single full name to parse' },
+        ],
+        default: 'splitFullNames',
       },
 
       // Ethnicity (Diaspora) by first/last name (batch)
@@ -52,7 +129,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Name',
         default: {},
-        displayOptions: { show: { operation: ['ethnicityName'] } },
+        displayOptions: { show: { resource: ['ethnicity'], operation: ['name'] } },
         options: [
           {
             name: 'name',
@@ -60,7 +137,28 @@ export class Namsor implements INodeType {
             values: [
               { displayName: 'First Name', name: 'firstName', type: 'string', default: '', description: 'Optional first name to increase accuracy' },
               { displayName: 'Last Name', name: 'lastName', type: 'string', default: '', required: true, description: 'Last name or surname' },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional country code for local context' },
+              { displayName: 'Country (ISO 3166-1 alpha-2). U.S. by default', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional country code providing local context to improve accuracy.' },
+            ],
+          },
+        ],
+      },
+
+      // Ethnicity (Diaspora) by full name (batch)
+      {
+        displayName: 'Names to Analyze',
+        name: 'personalNames',
+        type: 'fixedCollection',
+        typeOptions: { multipleValues: true },
+        placeholder: 'Add Full Name',
+        default: {},
+        displayOptions: { show: { resource: ['ethnicity'], operation: ['fullName'] } },
+        options: [
+          {
+            name: 'name',
+            displayName: 'Name',
+            values: [
+              { displayName: 'Full Name', name: 'name', type: 'string', default: '', required: true },
+              { displayName: 'Country (ISO 3166-1 alpha-2). U.S. by default', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional country code providing local context to improve accuracy.' },
             ],
           },
         ],
@@ -74,7 +172,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Name',
         default: {},
-        displayOptions: { show: { operation: ['genderName'] } },
+        displayOptions: { show: { resource: ['gender'], operation: ['name'] } },
         options: [
           {
             name: 'name',
@@ -82,7 +180,7 @@ export class Namsor implements INodeType {
             values: [
               { displayName: 'First Name', name: 'firstName', type: 'string', default: '', required: true },
               { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional; when provided, uses geo endpoint' },
+              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
             ],
           },
         ],
@@ -96,14 +194,14 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Full Name',
         default: {},
-        displayOptions: { show: { operation: ['genderFullName'] } },
+        displayOptions: { show: { resource: ['gender'], operation: ['fullName'] } },
         options: [
           {
             name: 'name',
             displayName: 'Entry',
             values: [
               { displayName: 'Full Name', name: 'name', type: 'string', default: '', required: true },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional; when provided, uses geo endpoint' },
+              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
             ],
           },
         ],
@@ -117,14 +215,14 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Full Name',
         default: {},
-        displayOptions: { show: { operation: ['splitFullNames'] } },
+        displayOptions: { show: { resource: ['nameParsing'], operation: ['splitFullNames'] } },
         options: [
           {
             name: 'name',
             displayName: 'Entry',
             values: [
               { displayName: 'Full Name', name: 'name', type: 'string', default: '', required: true },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional; when provided, uses geo endpoint' },
+              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
             ],
           },
         ],
@@ -138,7 +236,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Name',
         default: {},
-        displayOptions: { show: { operation: ['originName'] } },
+        displayOptions: { show: { resource: ['origin'], operation: ['name'] } },
         options: [
           {
             name: 'name',
@@ -159,7 +257,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Full Name',
         default: {},
-        displayOptions: { show: { operation: ['originFullName'] } },
+        displayOptions: { show: { resource: ['origin'], operation: ['fullName'] } },
         options: [
           {
             name: 'name',
@@ -179,7 +277,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Name',
         default: {},
-        displayOptions: { show: { operation: ['usRaceEthnicityName'] } },
+        displayOptions: { show: { resource: ['usRaceEthnicity'], operation: ['name'] } },
         options: [
           {
             name: 'name',
@@ -187,7 +285,7 @@ export class Namsor implements INodeType {
             values: [
               { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
               { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional country for local context' },
+              { displayName: 'Country (ISO 3166-1 alpha-2), U.S. by default', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
             ],
           },
         ],
@@ -201,14 +299,14 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Full Name',
         default: {},
-        displayOptions: { show: { operation: ['usRaceEthnicityFullName'] } },
+        displayOptions: { show: { resource: ['usRaceEthnicity'], operation: ['fullName'] } },
         options: [
           {
             name: 'name',
             displayName: 'Entry',
             values: [
               { displayName: 'Full Name', name: 'name', type: 'string', default: '', required: true },
-              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '' },
+              { displayName: 'Country (ISO 3166-1 alpha-2),  U.S. by default', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: "Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy." },
             ],
           },
         ],
@@ -222,7 +320,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Name',
         default: {},
-        displayOptions: { show: { operation: ['indianCasteName'] } },
+        displayOptions: { show: { resource: ['indianCaste'], operation: ['name'] } },
         options: [
           {
             name: 'name',
@@ -244,7 +342,7 @@ export class Namsor implements INodeType {
         typeOptions: { multipleValues: true },
         placeholder: 'Add Full Name',
         default: {},
-        displayOptions: { show: { operation: ['indianCasteFullName'] } },
+        displayOptions: { show: { resource: ['indianCaste'], operation: ['fullName'] } },
         options: [
           {
             name: 'name',
@@ -260,16 +358,30 @@ export class Namsor implements INodeType {
   };
 
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    const resource = this.getNodeParameter('resource', 0) as string;
     const operation = this.getNodeParameter('operation', 0) as string;
     const returnData: IDataObject[] = [];
+    const toEntries = (paramName: string): IDataObject[] => {
+      const raw = this.getNodeParameter(paramName, 0) as IDataObject | IDataObject[] | undefined;
+      if (!raw) return [];
+      if (Array.isArray(raw)) {
+        // Array of collections with inner 'name' arrays
+        return (raw as IDataObject[]).flatMap((e) => ((e as any)?.name as IDataObject[] | undefined) || []);
+      }
+      // Single collection object with 'name' array
+      const inner = (raw as any)?.name as IDataObject[] | undefined;
+      return inner || [];
+    };
 
     // Ethnicity (diaspora) by name
-    if (operation === 'ethnicityName') {
-      const personalNamesCollection = this.getNodeParameter('personalNames', 0, []) as Array<{ name: Array<{ firstName?: string; lastName: string; countryIso2?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ firstName: (n.firstName || '').toString(), lastName: (n.lastName || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+    if (resource === 'ethnicity' && operation === 'name') {
+      const entries = toEntries('personalNames');
+      const names = entries
+        .map((n) => ({
+          firstName: ((n as any).firstName || '').toString(),
+          lastName: ((n as any).lastName || '').toString(),
+          countryIso2: ((n as any).countryIso2 || '').toString(),
+        }))
         .filter((n) => n.lastName);
 
       if (names.length === 0) throw new Error('Please add at least one name with a Last Name.');
@@ -284,13 +396,37 @@ export class Namsor implements INodeType {
       }
     }
 
-    // Gender by name (classic/geo)
-    if (operation === 'genderName') {
-      const personalNamesCollection = this.getNodeParameter('genderPersonalNames', 0, []) as Array<{ name: Array<{ firstName: string; lastName?: string; countryIso2?: string }> }>;
+    // Ethnicity (diaspora) by full name
+    if (resource === 'ethnicity' && operation === 'fullName') {
+      const entries = toEntries('personalNames');
+      const names = entries
+        .map((n) => ({
+          name: ((n as any).name || '').toString(),
+          countryIso2: ((n as any).countryIso2 || '').toString(),
+        }))
+        .filter((n) => n.name);
 
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ firstName: (n.firstName || '').toString(), lastName: (n.lastName || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+      if (names.length === 0) throw new Error('Please add at least one Full Name.');
+      if (names.length > 200) throw new Error('A maximum of 200 names is allowed per request.');
+
+      const body = { personalNames: names } as IDataObject;
+      const response = (await namsorApiRequest.call(this, 'POST', '/api2/json/diasporaFullBatch', body)) as IDataObject;
+      const results = (response.personalNames as IDataObject[]) || [];
+      for (const r of results) {
+        const ethnicitiesTop = ((r.ethnicitiesTop as unknown) as string[]) || [];
+        returnData.push({ script: r.script, name: r.name, countryIso2: r.countryIso2, ethnicity: ethnicitiesTop[0], ethnicity2: ethnicitiesTop[1], ethnicity3: ethnicitiesTop[2], ethnicity4: ethnicitiesTop[3], ethnicity5: ethnicitiesTop[4], probabilityCalibrated: r.probabilityCalibrated } as IDataObject);
+      }
+    }
+
+    // Gender by name (classic/geo)
+    if (resource === 'gender' && operation === 'name') {
+      const entries = toEntries('genderPersonalNames');
+      const names = entries
+        .map((n) => ({
+          firstName: ((n as any).firstName || '').toString(),
+          lastName: ((n as any).lastName || '').toString(),
+          countryIso2: ((n as any).countryIso2 || '').toString(),
+        }))
         .filter((n) => n.firstName);
 
       if (names.length === 0) throw new Error('Please add at least one entry with a First Name.');
@@ -298,7 +434,13 @@ export class Namsor implements INodeType {
 
       const useGeo = names.some((n) => n.countryIso2 && n.countryIso2.length > 0);
       const endpoint = useGeo ? '/api2/json/genderGeoBatch' : '/api2/json/genderBatch';
-      const body = { personalNames: names } as IDataObject;
+      const cleaned = names.map((n) => {
+        const e: IDataObject = { firstName: n.firstName };
+        if (n.lastName) e.lastName = n.lastName;
+        if (useGeo && n.countryIso2) e.countryIso2 = n.countryIso2;
+        return e;
+      });
+      const body = { personalNames: cleaned } as IDataObject;
       const response = (await namsorApiRequest.call(this, 'POST', endpoint, body)) as IDataObject;
       const results = (response.personalNames as IDataObject[]) || [];
       for (const r of results) {
@@ -307,12 +449,10 @@ export class Namsor implements INodeType {
     }
 
     // Gender by full name (classic/geo)
-    if (operation === 'genderFullName') {
-      const personalNamesCollection = this.getNodeParameter('genderFullPersonalNames', 0, []) as Array<{ name: Array<{ name: string; countryIso2?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ name: (n.name || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+    if (resource === 'gender' && operation === 'fullName') {
+      const entries = toEntries('genderFullPersonalNames');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString(), countryIso2: ((n as any).countryIso2 || '').toString() }))
         .filter((n) => n.name);
 
       if (names.length === 0) throw new Error('Please add at least one Full Name.');
@@ -320,7 +460,12 @@ export class Namsor implements INodeType {
 
       const useGeo = names.some((n) => n.countryIso2 && n.countryIso2.length > 0);
       const endpoint = useGeo ? '/api2/json/genderFullGeoBatch' : '/api2/json/genderFullBatch';
-      const body = { personalNames: names } as IDataObject;
+      const cleaned = names.map((n) => {
+        const e: IDataObject = { name: n.name };
+        if (useGeo && n.countryIso2) e.countryIso2 = n.countryIso2;
+        return e;
+      });
+      const body = { personalNames: cleaned } as IDataObject;
       const response = (await namsorApiRequest.call(this, 'POST', endpoint, body)) as IDataObject;
       const results = (response.personalNames as IDataObject[]) || [];
       for (const r of results) {
@@ -329,12 +474,10 @@ export class Namsor implements INodeType {
     }
 
     // Split full names (classic/geo)
-    if (operation === 'splitFullNames') {
-      const personalNamesCollection = this.getNodeParameter('splitFullPersonalNames', 0, []) as Array<{ name: Array<{ name: string; countryIso2?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ name: (n.name || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+    if (resource === 'nameParsing' && operation === 'splitFullNames') {
+      const entries = toEntries('splitFullPersonalNames');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString(), countryIso2: ((n as any).countryIso2 || '').toString() }))
         .filter((n) => n.name);
 
       if (names.length === 0) throw new Error('Please add at least one Full Name.');
@@ -342,7 +485,12 @@ export class Namsor implements INodeType {
 
       const useGeo = names.some((n) => n.countryIso2 && n.countryIso2.length > 0);
       const endpoint = useGeo ? '/api2/json/parseNameGeoBatch' : '/api2/json/parseNameBatch';
-      const body = { personalNames: names } as IDataObject;
+      const cleaned = names.map((n) => {
+        const e: IDataObject = { name: n.name };
+        if (useGeo && n.countryIso2) e.countryIso2 = n.countryIso2;
+        return e;
+      });
+      const body = { personalNames: cleaned } as IDataObject;
       const response = (await namsorApiRequest.call(this, 'POST', endpoint, body)) as IDataObject;
       const results = (response.personalNames as IDataObject[]) || [];
       for (const r of results) {
@@ -352,12 +500,10 @@ export class Namsor implements INodeType {
     }
 
     // Origin by name
-    if (operation === 'originName') {
-      const personalNamesCollection = this.getNodeParameter('originPersonalNames', 0, []) as Array<{ name: Array<{ firstName?: string; lastName?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ firstName: (n.firstName || '').toString(), lastName: (n.lastName || '').toString() }))
+    if (resource === 'origin' && operation === 'name') {
+      const entries = toEntries('originPersonalNames');
+      const names = entries
+        .map((n) => ({ firstName: ((n as any).firstName || '').toString(), lastName: ((n as any).lastName || '').toString() }))
         .filter((n) => n.firstName || n.lastName);
 
       if (names.length === 0) throw new Error('Please add at least one entry with a First or Last Name.');
@@ -373,12 +519,10 @@ export class Namsor implements INodeType {
     }
 
     // Origin by full name
-    if (operation === 'originFullName') {
-      const personalNamesCollection = this.getNodeParameter('originFullPersonalNames', 0, []) as Array<{ name: Array<{ name: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ name: (n.name || '').toString() }))
+    if (resource === 'origin' && operation === 'fullName') {
+      const entries = toEntries('originFullPersonalNames');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString() }))
         .filter((n) => n.name);
 
       if (names.length === 0) throw new Error('Please add at least one Full Name.');
@@ -394,12 +538,14 @@ export class Namsor implements INodeType {
     }
 
     // US Race/Ethnicity by name
-    if (operation === 'usRaceEthnicityName') {
-      const personalNamesCollection = this.getNodeParameter('usrePersonalNames', 0, []) as Array<{ name: Array<{ firstName?: string; lastName?: string; countryIso2?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ firstName: (n.firstName || '').toString(), lastName: (n.lastName || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+    if (resource === 'usRaceEthnicity' && operation === 'name') {
+      const entries = toEntries('usrePersonalNames');
+      const names = entries
+        .map((n) => ({
+          firstName: ((n as any).firstName || '').toString(),
+          lastName: ((n as any).lastName || '').toString(),
+          countryIso2: ((n as any).countryIso2 || '').toString(),
+        }))
         .filter((n) => n.firstName || n.lastName);
 
       if (names.length === 0) throw new Error('Please add at least one entry with a First or Last Name.');
@@ -416,12 +562,10 @@ export class Namsor implements INodeType {
     }
 
     // US Race/Ethnicity by full name
-    if (operation === 'usRaceEthnicityFullName') {
-      const personalNamesCollection = this.getNodeParameter('usreFullPersonalNames', 0, []) as Array<{ name: Array<{ name: string; countryIso2?: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ name: (n.name || '').toString(), countryIso2: (n.countryIso2 || '').toString() }))
+    if (resource === 'usRaceEthnicity' && operation === 'fullName') {
+      const entries = toEntries('usreFullPersonalNames');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString(), countryIso2: ((n as any).countryIso2 || '').toString() }))
         .filter((n) => n.name);
 
       if (names.length === 0) throw new Error('Please add at least one Full Name.');
@@ -438,12 +582,14 @@ export class Namsor implements INodeType {
     }
 
     // Indian caste by name
-    if (operation === 'indianCasteName') {
-      const personalNamesCollection = this.getNodeParameter('indianCastePersonalNames', 0, []) as Array<{ name: Array<{ firstName: string; lastName: string; subdivisionIso: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ firstName: (n.firstName || '').toString(), lastName: (n.lastName || '').toString(), subdivisionIso: (n.subdivisionIso || '').toString() }))
+    if (resource === 'indianCaste' && operation === 'name') {
+      const entries = toEntries('indianCastePersonalNames');
+      const names = entries
+        .map((n) => ({
+          firstName: ((n as any).firstName || '').toString(),
+          lastName: ((n as any).lastName || '').toString(),
+          subdivisionIso: ((n as any).subdivisionIso || '').toString(),
+        }))
         .filter((n) => n.firstName && n.lastName && n.subdivisionIso);
 
       if (names.length === 0) throw new Error('Please add at least one entry with First Name, Last Name, and subdivisionIso.');
@@ -459,12 +605,10 @@ export class Namsor implements INodeType {
     }
 
     // Indian caste by full name
-    if (operation === 'indianCasteFullName') {
-      const personalNamesCollection = this.getNodeParameter('indianCasteFullPersonalNames', 0, []) as Array<{ name: Array<{ name: string; subdivisionIso: string }> }>;
-
-      const names = (personalNamesCollection || [])
-        .flatMap((entry) => entry.name || [])
-        .map((n) => ({ name: (n.name || '').toString(), subdivisionIso: (n.subdivisionIso || '').toString() }))
+    if (resource === 'indianCaste' && operation === 'fullName') {
+      const entries = toEntries('indianCasteFullPersonalNames');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString(), subdivisionIso: ((n as any).subdivisionIso || '').toString() }))
         .filter((n) => n.name && n.subdivisionIso);
 
       if (names.length === 0) throw new Error('Please add at least one Full Name with subdivisionIso.');

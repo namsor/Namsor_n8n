@@ -1,4 +1,4 @@
-import type { IDataObject, IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods, IRequestOptions } from 'n8n-workflow';
+import type { IDataObject, IExecuteFunctions, ILoadOptionsFunctions, IHttpRequestMethods, IHttpRequestOptions } from 'n8n-workflow';
 
 export async function namsorApiRequest(
   this: IExecuteFunctions | ILoadOptionsFunctions,
@@ -8,12 +8,13 @@ export async function namsorApiRequest(
   qs: IDataObject = {},
   extraHeaders: IDataObject = {},
 ) {
-  const options: IRequestOptions = {
+  const options: IHttpRequestOptions = {
     method,
     qs,
     body,
-    url: `https://v2.namsor.com/NamsorAPIv2${endpoint}`,
+    url: `https://v2.namsor.com/NamSorAPIv2${endpoint}`,
     json: true,
+
     headers: {
       ...extraHeaders,
     } as IDataObject,

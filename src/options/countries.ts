@@ -1,5 +1,6 @@
 // Generated from enumerators/countriesList.js
 export const countryOptions: Array<{ name: string; value: string }> = [
+  { name: '— None —', value: '' },
   { name: 'Afghanistan (AF)', value: 'AF' },
   { name: '�.land Islands (AX)', value: 'AX' },
   { name: 'Albania (AL)', value: 'AL' },
@@ -251,4 +252,3 @@ export const countryOptions: Array<{ name: string; value: string }> = [
   { name: 'Zambia (ZM)', value: 'ZM' },
   { name: 'Zimbabwe (ZW)', value: 'ZW' },
 ];
-

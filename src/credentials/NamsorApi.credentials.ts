@@ -12,7 +12,7 @@ export class NamsorApi implements ICredentialType {
       type: 'string',
       typeOptions: { password: true },
       default: '',
-      description: 'Your Namsor API key (sent as X-API-KEY header).',
+      description: 'Your Namsor API key (sent as X-API-KEY header). Retrieve your Namsor API key at https://namsor.app/my-account/',
     },
   ];
 
@@ -27,8 +27,8 @@ export class NamsorApi implements ICredentialType {
 
   test = {
     request: {
-      baseURL: 'https://v2.namsor.com/NamsorAPIv2',
-      url: '/api2/json/gender/Joe/Smith',
+      baseURL: 'https://namsor.app',
+      url: '/api/add-on/get-user-data-and-features',
       method: 'GET' as IHttpRequestMethods,
     },
   };
