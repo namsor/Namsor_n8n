@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-namsor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official Namsor integration for n8n (community nodes)",
   "author": "Namsor",
   "license": "MIT",
