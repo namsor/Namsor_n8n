@@ -1,14 +1,16 @@
 {
   "name": "n8n-nodes-namsor",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Official Namsor integration for n8n (community nodes)",
-  "author": "",
+  "author": "Namsor",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "src/nodes/Namsor/namsor.svg"
+    "src/nodes/Namsor/namsor.svg",
+    "LICENSE",
+    "README.md"
   ],
   "keywords": [
     "n8n",
@@ -18,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/namsor/Namsor_n8n.git"
   },
   "scripts": {
     "build": "rimraf dist && tsc && copyfiles -u 1 \"src/nodes/**/*.svg\" dist/",
