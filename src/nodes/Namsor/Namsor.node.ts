@@ -37,6 +37,7 @@ export class Namsor implements INodeType {
           { name: 'US Race/Ethnicity', value: 'usRaceEthnicity', description: 'Predict US census race/ethnicity classes' },
           { name: 'Indian Caste', value: 'indianCaste', description: 'Predict Indian caste group from a name' },
           { name: 'Name Parsing', value: 'nameParsing', description: 'Split a full name into first and last name' },
+          { name: 'Name Type Recognition', value: 'nameTypeRecognition', description: 'Identify the most likely name type (anthroponym, brand name, toponym)' }
         ],
         default: 'gender',
       },
@@ -119,6 +120,18 @@ export class Namsor implements INodeType {
           { name: 'Split Full Names', value: 'splitFullNames', action: 'Split full names', description: 'Provide a single full name to parse' },
         ],
         default: 'splitFullNames',
+      },
+      {
+        displayName: 'Operation',
+        name: 'operation',
+        type: 'options',
+        noDataExpression: true,
+        displayOptions: { show: { resource: ['nameTypeRecognition'] } },
+        description: 'Identify the most likely name type (anthroponym, brand name, toponym).',
+        options: [
+          { name: 'Proper Noun Type', value: 'properNounType', action: 'Proper Noun Type', description: 'Predict name type from a proper noun' },
+        ],
+        default: 'properNounType',
       },
 
       // Ethnicity (Diaspora) by first/last name (batch)
@@ -222,6 +235,27 @@ export class Namsor implements INodeType {
             displayName: 'Entry',
             values: [
               { displayName: 'Full Name', name: 'name', type: 'string', default: '', required: true },
+              { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
+            ],
+          },
+        ],
+      },
+
+      // Name type recognition (classic/geo switch)
+      {
+        displayName: 'Proper Nouns to Analyze',
+        name: 'nameTypeRecognition',
+        type: 'fixedCollection',
+        typeOptions: { multipleValues: true },
+        placeholder: 'Add Proper Noun',
+        default: {},
+        displayOptions: { show: { resource: ['nameTypeRecognition'], operation: ['properNounType'] } },
+        options: [
+          {
+            name: 'name',
+            displayName: 'Entry',
+            values: [
+              { displayName: 'Proper Noun', name: 'name', type: 'string', default: '', required: true },
               { displayName: 'Country (ISO 3166-1 alpha-2)', name: 'countryIso2', type: 'options', options: countryOptions, default: '', description: 'Optional. Enter a 2-letter country code (e.g. US, FR, IN) to focus predictions on that country and improve accuracy.' },
             ],
           },
@@ -496,6 +530,31 @@ export class Namsor implements INodeType {
       for (const r of results) {
         const firstLast = (r.firstLastName as IDataObject) || ({} as IDataObject);
         returnData.push({ script: r.script, name: r.name, countryIso2: r.countryIso2, firstName: firstLast.firstName, lastName: firstLast.lastName } as IDataObject);
+      }
+    }
+
+    // Get proper noun type
+    if (resource === 'nameTypeRecognition' && operation === 'properNounType') {
+      const entries = toEntries('nameTypeRecognition');
+      const names = entries
+        .map((n) => ({ name: ((n as any).name || '').toString(), countryIso2: ((n as any).countryIso2 || '').toString() }))
+        .filter((n) => n.name);
+
+      if (names.length === 0) throw new Error('Please add at least one Proper Noun.');
+      if (names.length > 200) throw new Error('A maximum of 200 names is allowed per request.');
+
+      const useGeo = names.some((n) => n.countryIso2 && n.countryIso2.length > 0);
+      const endpoint = useGeo ? '/api2/json/nameTypeGeoBatch' : '/api2/json/nameTypeBatch';
+      const cleaned = names.map((n) => {
+        const e: IDataObject = { name: n.name };
+        if (useGeo && n.countryIso2) e.countryIso2 = n.countryIso2;
+        return e;
+      });
+      const body = { properNouns: cleaned } as IDataObject;
+      const response = (await namsorApiRequest.call(this, 'POST', endpoint, body)) as IDataObject;
+      const results = (response.properNouns as IDataObject[]) || [];
+      for (const r of results) {
+        returnData.push({ script: r.script, name: r.name, countryIso2: r.countryIso2, commonType: r.commonType, commonTypeAlt: r.commonTypeAlt } as IDataObject);
       }
     }
 
